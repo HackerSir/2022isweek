@@ -11,8 +11,8 @@ var CardGame = function (targetId) {
     var answer = ["1H", "2H", "3H", "4H", "5H", "6H", "7H", "8H"]
 
     // 圖書館出的題目 有 6 題
-    var library_question = ["13C_Library", "14C_Library", "15C_Library", "16C_Library", "17C_Library", "18C_Library"]
-    var library_answer = ["13H_Library", "14H_Library", "15H_Library", "16H_Library", "17H_Library", "18H_Library"]
+    var library_question = ["12C_Lib", "13C_Lib", "14C_Lib", "9C_DEV", "10C_DEV", "11C_DEV"]
+    var library_answer = ["12H_Lib", "13H_Lib", "14H_Lib", "9H_DEV", "10H_DEV", "11H_DEV"]
 
 
     var matches_found = 0;
@@ -27,9 +27,9 @@ var CardGame = function (targetId) {
             clickable.pop(id);
         }, 500);
         if (id < cards_num)
-            cards[id].firstChild.src = "./images/question.png";
+            cards[id].firstChild.src = "./images/back.png";
         else
-            cards[id].firstChild.src = "./images/ans.png";
+            cards[id].firstChild.src = "./images/back.png";
         with (cards[id].style) {
             WebkitTransform = MozTransform = OTransform = msTransform = "scale(1.0) rotate(0deg)";
         }
@@ -79,7 +79,7 @@ var CardGame = function (targetId) {
         clickable.splice($.inArray(id, clickable), 1);
         if (id === card1) return;
         if (cards[id].clicked) return;
-        cards[id].className = "card";
+        cards[id].className = "game-card";
         cards[id].firstChild.src = "./images/" + card_value[id] + ".png";
 
         if (card1 !== false) {
@@ -93,6 +93,8 @@ var CardGame = function (targetId) {
                     }, idx * 100);
                 })(i);
             }
+            console.log(parseInt(card_value[card1]));
+            console.log(parseInt(card_value[card2]));
             if (parseInt(card_value[card1]) == parseInt(card_value[card2])) { // match found
 
                 if (++matches_found == 2) { // game over, reset
@@ -109,18 +111,15 @@ var CardGame = function (targetId) {
                         is_deal = false;
                     }, i * 100);
                     setTimeout(function () {
-                        alertify.confirm('快至攤位兌換獎品吧！').set({
+                        alertify.alert('保留這個畫面來兌換獎品吧！').set({
                             title: '恭喜完成闖關',
-                            labels: { ok: '重新開始', cancel: '查看解析' },
+                            label: '重新開始',
                             closable: false,
                             onok: function (event) {
                                 card1 = card2 = false;
                                 cards_num = 8;
                                 startCard();
                                 deal();
-                            },
-                            oncancel: function (event) {
-                                window.location = './explain.html';
                             }
 
                         });
@@ -129,9 +128,7 @@ var CardGame = function (targetId) {
                 else {
                     alertify.alert('繼續挑戰下一關吧').set({
                         title: '恭喜！答對了',
-                        labels: {
-                            ok: '下一關',
-                        },
+                        label: '下一關',
                         closable: false,
                         onok: function (event) {
                             moveToPack(card1);
@@ -147,9 +144,7 @@ var CardGame = function (targetId) {
             } else { // no match
                 alertify.alert('再重新抽一次題目吧').set({
                     title: '哎呀！答錯了',
-                    labels: {
-                        ok: '重新開始',
-                    },
+                    label: '重新開始',
                     closable: false,
                     onok: function (event) {
                         moveToPack(card1);
@@ -258,13 +253,13 @@ var CardGame = function (targetId) {
 
         // template for card
         var card = document.createElement("div");
-        card.innerHTML = "<img src=\"./images/question.png\">";
-        card.className = "card";
+        card.innerHTML = "<img src=\"./images/back.png\">";
+        card.className = "game-card";
 
         // 題目卡
         for (var i = 0; i < cards_num; i++) {
             var newCard = card.cloneNode(true);
-            newCard.className = "card";
+            newCard.className = "game-card";
             newCard.fromtop = 15 + window.innerHeight / 4 + window.innerHeight / 4 * Math.floor(i / 4);
             newCard.fromleft = 15 + (window.innerWidth - 30) / 4 * (i % 4);
             (function (idx) {
@@ -278,10 +273,10 @@ var CardGame = function (targetId) {
         }
 
         // 答案卡
-        card.innerHTML = "<img src=\"./images/ans.png\">";
+        card.innerHTML = "<img src=\"./images/back.png\">";
         for (var i = 0; i < cards_num; i++) {
             var newCard = card.cloneNode(true);
-            newCard.className = "card";
+            newCard.className = "game-card";
             with (newCard.style) {
                 left = 15 + window.innerWidth / 4 + "px";
             }
@@ -299,7 +294,7 @@ var CardGame = function (targetId) {
 
     };
 
-    alertify.alert('駭，你好！', '<div>請根據卡牌上的題目找到相對應的答案！</br>卡牌說明：</br><img style="height:20vh;" src="images/question.png">  <img style="height:20vh;" src="images/ans.png"></div>').set({
+    alertify.alert('駭，你好！', '<div>請根據卡牌上的題目找到相對應的答案！</br>遊玩說明：</br>先抽一張題目卡，再找出對應的答案卡</br></br> <img style="height:20vh;" src="images/back.png"> <img style="height:20vh;" src="images/front.png"> </div>').set({
         label: '開始',
         closable: false,
         onok: function (closeEvent) {
